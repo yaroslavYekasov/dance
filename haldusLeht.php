@@ -27,6 +27,20 @@ if (isset($_REQUEST["paarinimi"]) && !empty($_REQUEST["paarinimi"])) {
     $yhendus->close();
 }
 
+//lisa komment
+if (isset($_REQUEST["komment"])){
+    if(isset($_REQUEST["uuskomment"]) && !empty($_REQUEST["paarnimi"])){
+        global $yhendus;
+        $kask = $yhendus->prepare("UPDATE tantsud SET kommentaarid=CONCAT(kommentaarid, ?) WHERE id=?");
+        $kommentplus = $_REQUEST["uuskomment"]. "\n";
+        $kask->bind_param("si", $kommentplus, $_REQUEST["komment"]);
+        $kask->execute();
+        header("Location: $_SERVER[PHP_SELF]");
+        $yhendus->close();
+    }
+
+}
+
 if (isset($_REQUEST["kustutapaar"])) {
     global $yhendus;
     $kask = $yhendus->prepare("DELETE FROM tantsud WHERE id=?");
@@ -83,6 +97,7 @@ function isAdmin()
         <th>Tantsupaari nimi</th>
         <th>Punktid</th>
         <th>Paev</th>
+        <th>Kommentaarid</th>
         <?php if (!isAdmin()) { ?>
             <th>Lisa 1</th>
             <th>Emalda 1</th>
@@ -91,8 +106,8 @@ function isAdmin()
     </tr>
     <?php
     global $yhendus;
-    $kask = $yhendus->prepare("SELECT id, tantsupaar, punktid, ava_paev FROM tantsud WHERE avalik=1");
-    $kask->bind_result($id, $tantsupaar, $punktid, $ava_paev);
+    $kask = $yhendus->prepare("SELECT id, tantsupaar, punktid, ava_paev, kommentaarid FROM tantsud WHERE avalik=1");
+    $kask->bind_result($id, $tantsupaar, $punktid, $ava_paev, $komment);
     $kask->execute();
     while ($kask->fetch()) {
         echo "<tr>";
@@ -100,6 +115,15 @@ function isAdmin()
         echo "<td>" . $tantsupaar . "</td>";
         echo "<td>" . $punktid . "</td>";
         echo "<td>" . $ava_paev . "</td>";
+        echo "<td>" . $komment . "</td>";
+        echo "<td>
+<form action='?'>
+<input type='hidden' value='$id' name='komment'>
+<input type='text' name='uuskomment' id='uuskomment'>
+            </br>
+            <input type='submit' value='Ok'>
+</form>
+        ";
         if (isAdmin()) {
 
         } else if (!isAdmin()) {
