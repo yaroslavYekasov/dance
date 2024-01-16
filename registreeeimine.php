@@ -43,7 +43,7 @@ if (isset($_POST["register"])) {
                     </tr>
                     <tr>
                         <td>
-                            <input type="password" id="pass" name="pass" required placeholder="pass">
+                            <input type="password" id="pass" name="pass" required placeholder="password">
                         </td>
                     </tr>
                     <tr>
